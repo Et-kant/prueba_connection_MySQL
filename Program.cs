@@ -112,6 +112,77 @@ public class ReadDB
 
 }
 
+public class UpdateDB
+{
+    private String _Stringdeconexion;
+
+    public UpdateDB(String conexionString)
+    {
+        _Stringdeconexion = conexionString;
+    }
+
+    public void UpdateUser(int id, String newName, String newApellido, String newEmail, String newTelefono)
+    {
+        String consulta = "UPDATE Clientes SET Nombre = @name, Apellido = @Apellido, Email = @Email, Telefono = @Telefono WHERE id = @id";
+
+        using (MySqlConnection con = new MySqlConnection(_Stringdeconexion))
+        {
+            MySqlCommand cmd = new MySqlCommand(consulta, con);
+            cmd.Parameters.AddWithValue("@name", newName);
+            cmd.Parameters.AddWithValue("@Apellido", newApellido);
+            cmd.Parameters.AddWithValue("@Email", newEmail);
+            cmd.Parameters.AddWithValue("@Telefono", newTelefono);
+            cmd.Parameters.AddWithValue("@id", id);
+
+
+            try
+            {
+                con.Open();
+                int rowsAffected = cmd.ExecuteNonQuery();
+
+                Console.WriteLine($"{rowsAffected} filas actualizadas");
+            }catch (MySqlException e)
+            {
+                Console.WriteLine("Error" + e.Message);
+            }
+
+        }
+    }
+
+
+}
+
+
+public class DeleteDB
+{
+    private String _Stringconnection;
+
+    public DeleteDB(String conexionString)
+    {
+        _Stringconnection = conexionString;
+    }
+    public void DeleteUser(int id)
+    {
+        String consulta = "DELETE FROM Clientes WHERE id = @Id";
+
+        using(MySqlConnection con = new MySqlConnection(_Stringconnection))
+        {
+            MySqlCommand cmd = new MySqlCommand(consulta, con);
+            cmd.Parameters.AddWithValue("@id", id);
+
+            try
+            {
+                con.Open() ;
+                int rowsAffected = cmd.ExecuteNonQuery();
+                Console.WriteLine($"Total de filas afectadas {rowsAffected}");
+
+            }catch (MySqlException e)
+            {
+                Console.WriteLine("Error" + e.Message);
+            }
+        }
+    }
+}
 
 class program
 {
@@ -119,21 +190,21 @@ class program
     {
        string conexionString = "server= localhost;user id = root; password = 1234; database = users";
 
-        Usuario user = new Usuario("Ryan", "Trujillo", "Email@gmail.com", "3145481234");
-        Usuario user2 = new Usuario("Pedro", "Sanchez", "Emaail@gmail.com", "123456789");
+        //Usuario user = new Usuario("Ryan", "Trujillo", "Email@gmail.com", "3145481234");
+        //Usuario user2 = new Usuario("Pedro", "Sanchez", "Emaail@gmail.com", "123456789");
 
         AccesoaDB data = new AccesoaDB(conexionString);
-        bool prueba = data.InsertarUsuario(user);
-        data.InsertarUsuario(user2);
+        //bool prueba = data.InsertarUsuario(user);
+        //data.InsertarUsuario(user2);
 
-        if (prueba)
-        {
-            Console.WriteLine("La prueba fue exitiosa");
-        }
-        else
-        {
-            Console.WriteLine("El usuario no pudo se añadido");
-        }
+        //if (prueba)
+        //{
+        //    Console.WriteLine("La prueba fue exitiosa");
+        //}
+        //else
+        //{
+        //    Console.WriteLine("El usuario no pudo se añadido");
+        //}
 
         ReadDB readDB = new ReadDB(conexionString);
         List<Usuario> usuarios = readDB.GetUsers();
@@ -144,6 +215,13 @@ class program
         {
             Console.WriteLine($"Nombre: {usr.Nombre}, Apellido: {usr.Apellido}, Email: {usr.Email}, Telefono: {usr.Telefono}");  
         }
+
+        UpdateDB updateDB = new UpdateDB(conexionString);
+        updateDB.UpdateUser(1, "Roberto", "Lorenzo", "123@gmail.com", "1111111111");
+        //updateDB.UpdateUser(10, "JoseAlonso");
+
+        DeleteDB deleteDB = new DeleteDB(conexionString);
+        deleteDB.DeleteUser(2);
     }
 
 }
