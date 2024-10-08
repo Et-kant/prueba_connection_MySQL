@@ -1,0 +1,15 @@
+{
+  "version": "0.2.1",
+  "tasks": [
+    {
+      "taskLabel": "tarea-prueba_connection_MySQL",
+      "appliesTo": "/",
+      "type": "launch"
+    },
+    {
+      "taskLabel": "tarea-Program",
+      "appliesTo": "Program.cs",
+      "type": "launch"
+    }
+  ]
+}
