@@ -1,56 +1,92 @@
 ﻿using MySql.Data.MySqlClient;
+using MySqlX.XDevAPI;
 using System;
+using System.Security.Cryptography;
+
+public class Usuario
+{
+    public string Nombre { get; set; }
+    public string Apellido { get; set; }
+    public string Email { get; set; }
+    public string Telefono { get; set; }
+    public Usuario(String nombre, String apellido, String email, String telefono)
+    {
+        this.Nombre = nombre;
+        this.Apellido = apellido;
+        this.Email = email;
+        this.Telefono = telefono;
+    }
+}
+
+
+public class AccesoaDB
+{
+    private String _Stringdeconexion;
+    public AccesoaDB(String conexionString)
+    {
+        _Stringdeconexion = conexionString;
+    }
+
+    public bool InsertarUsuario(Usuario usuario)
+    {
+        string consulta = "INSERT INTO Clientes (Nombre, Apellido, Email, Telefono) VALUES (@Nombre, @Apellido, @Email, @Telefono)";
+
+        using(MySqlConnection con = new MySqlConnection(_Stringdeconexion))
+        {
+            try
+            {
+                con.Open();
+                using(MySqlCommand cmd = new MySqlCommand(consulta, con))
+                {
+                    cmd.Parameters.AddWithValue("@Nombre", usuario.Nombre);
+                    cmd.Parameters.AddWithValue("@Apellido", usuario.Apellido);
+                    cmd.Parameters.AddWithValue("@Email", usuario.Email);
+                    cmd.Parameters.AddWithValue("@Telefono", usuario.Telefono);
+
+                    int filasAfect = cmd.ExecuteNonQuery();
+
+                    return filasAfect > 0;
+                }
+
+            }catch(MySqlException e)
+            {
+                Console.WriteLine("ERROR" + e.Message);
+                return false;
+            }
+            finally
+            {
+                con.Close();
+                Console.WriteLine("Coneccion cerrada satisfactoriamente");
+            }
+
+        }
+    }
+}
+
 
 class program
 {
     static void Main(string[] args)
     {
-        string connectionString = "server= localhost;user id = root; password = 1234; database = new_database_connection.Clientes";
+       string conexionString = "server= localhost;user id = root; password = 1234; database = users";
 
-        String Nombre = "Ryan";
-        String Apellido = "Lopez";
-        String Email = "email@gmai.com";
-        String Telefono = "3145471541";
+        Usuario user = new Usuario("Ryan", "Trujillo", "Email@gmail.com", "3145481234");
+        Usuario user2 = new Usuario("Pedro", "Sanchez", "Emaail@gmail.com", "123456789");
 
-        String query = "INSERT INTO Clientes (Nombre, Apellido, Email, Telefono) VALUES (@Nombre, @Apellido, @Email, @Telefono)";
+        AccesoaDB data = new AccesoaDB(conexionString);
+        bool prueba = data.InsertarUsuario(user);
+        data.InsertarUsuario(user2);
 
-        using (MySqlConnection conn = new MySqlConnection(connectionString))
+        if (prueba)
         {
-            try
-            {
-
-                conn.Open();
-                Console.WriteLine("The connection to the data base was successfull");
-
-                using (MySqlCommand cmd = new MySqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@Nombre", Nombre);
-                    cmd.Parameters.AddWithValue("@Apellido", Apellido);
-                    cmd.Parameters.AddWithValue("@Email", Email);
-                    cmd.Parameters.AddWithValue("@Telefono", Telefono);
-
-                    int filasAfectadas = cmd.ExecuteNonQuery();
-                    
-                    if(filasAfectadas > 0)
-                    {
-                        Console.WriteLine("The user has been add it to the Data Base");
-                    }
-                    else
-                    {
-                        Console.WriteLine("The user was no possible to be added");
-                    }
-                }
-            }
-            catch(MySqlException ex)
-            {
-                Console.WriteLine("An error has ocurred" + ex.Message);
-                
-            }
-            finally
-            {
-                conn.Close();
-                Console.WriteLine("The Connection was closed Successfully");
-            }
+            Console.WriteLine("La prueba fue exitiosa");
         }
-    } 
+        else
+        {
+            Console.WriteLine("El usuario no pudo se añadido");
+        }
+
+    }
+
 }
+
