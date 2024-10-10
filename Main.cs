@@ -1,9 +1,10 @@
-﻿using MySql.Data.MySqlClient;
-using MySqlX.XDevAPI;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using ZstdSharp.Unsafe;
+using ConsoleApp1.Models;
+using ConsoleApp1.Controllers;
 
 
 namespace ConsoleApp1
@@ -12,7 +13,7 @@ class Program
 {
     static void Main(string[] args)
     {
-       string conexionString = "server= localhost;user id = root; password = 1234; database = users";
+        string conexionString = "Server=localhost;Database=users;Uid=root;Pwd=1234;"; ;
 
         Usuario user = new Usuario("Ryan", "Trujillo", "Email@gmail.com", "3145481234");
         Usuario user2 = new Usuario("Pedro", "Sanchez", "Emaail@gmail.com", "123456789");
